@@ -12,11 +12,11 @@ quit
 EOF
 
 cat >! cohere.in << EOF
-2016.006.01.15.00.0195.IC.MDJ.00.BHZ.M.SAC.cor.cut
 2009.145.00.45.00.0248.IC.MDJ.00.BHZ.M.SAC.cor.cut
+2013.043.02.45.00.0478.IC.MDJ.00.BHZ.M.SAC.cor.cut
+10
 20
-100
-5
+2
 EOF
 
 cohere < cohere.in
@@ -34,3 +34,13 @@ cohere < cohere.in
 #5
 # 2009.145.00.45.00.0248.IC.MDJ.00.BHZ.M.SAC.cor.cut                                                                                      3500
 # 2016.006.01.15.00.0195.IC.MDJ.00.BHZ.M.SAC.cor.cut                              
+
+cat >! sac.plt << EOF
+bd x
+qdp off
+read coh.ab
+p1
+pause
+quit
+EOF
+sac sac.plt
