@@ -1,7 +1,5 @@
 2016.006.01.15.00.0195.IC.MDJ.00.BHZ.M.SAC.cor.cut
 2009.145.00.45.00.0248.IC.MDJ.00.BHZ.M.SAC.cor.cut
-80
- Number of windows:
-10
- Correlation window length(sec):
-50
+20
+100
+5

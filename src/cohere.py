@@ -26,6 +26,11 @@ if( nargs == 0 ):
 	print( "error need more than 0 args got %d " % nargs )
 	sys.exit()
 
+#### debug
+# print("nargs = " + str(nargs))
+# for i in range( 0, nargs+1, 1 ):
+#	print( " i = " + str(i) + " argv = " + sys.argv[i] )
+
 #
 # the first argv is the name of the array
 #
@@ -34,10 +39,11 @@ array_name = str( sys.argv[1] )
 # reads into single stream
 #
 st = obspy.read( sys.argv[2] )
-for i in range( 3, nargs-1, 1 ):
+print("adding file " + sys.argv[2] )
+for i in range( 3, nargs + 1, 1 ):
+	print("adding file " + sys.argv[i] )
 	st += obspy.read( sys.argv[i] )
-
-print( " Read into stream=" + str(len(st)) + " nargs = " + str(nargs-1) )
+print( " Read number of files into stream=" + str(len(st)) + " nargs = " + str(nargs+1) )
 
 #
 # loop over each trace in stream and extract trace(tr1) and next trace(tr2)
@@ -60,9 +66,11 @@ for i in range( 0, len(st)-1, 1 ):
 
 	# fs = sampling frequency = 1 / dt
 	sampling_frequency = 1 / tr1.stats.delta
+	print( sampling_frequency )
+	print( tr1.stats.delta )
 	print( "Calling scipy.coherence: " + index_string + " i=" + str(i) + " fs=" + str(sampling_frequency) + " npts = " + str(tr1.stats.npts) )
 	f, Cxy = sp.coherence( tr1.data, tr2.data, fs=sampling_frequency )
-	# print(f.shape, f.size)
+	print(f.shape, f.size)
 	# print(Cxy.shape, Cxy.size)
 	index_list.append(index_string)
 	coh = np.append( coh, Cxy, axis=0 )
@@ -78,8 +86,13 @@ for i in range( 0, len(st)-1, 1 ):
 	plt.xlabel('Frequency (Hz)', fontsize=14)
 	plt.grid( axis='both', which="both", color='black', linestyle='dashed', linewidth=0.5 )
 
-	ax.set_xticks( np.arange( 0, 0.5*sampling_frequency, 10), minor=False )
-	ax.set_xticks( np.arange( 0, 0.5*sampling_frequency,  2), minor=True )
+	fmin = 0.0
+	fmax = 0.5*sampling_frequency
+	xaxis_major_ticks = np.arange( fmin, fmax, np.around( fmax/5.0, decimals=1 ))
+	xaxis_minor_ticks = np.arange( fmin, fmax, np.around( fmax/25.0, decimals=1 ))
+
+	ax.set_xticks( xaxis_major_ticks, minor=False )
+	ax.set_xticks( xaxis_minor_ticks, minor=True )
 	ax.set_yticks( np.arange( 0, 1, 0.2), minor=False )
 	ax.set_yticks( np.arange( 0, 1, 0.1), minor=True )
 
@@ -127,14 +140,26 @@ ax.set_title( array_name + ' Coherency for DAS channel pairs (' + start_date_str
 # old_ticks = ax.get_xticks()
 # print(old_ticks)
 
-ax.set_xticks( np.arange( 0, len(df.columns), len(df.columns)/10 ), minor=False )
-ax.set_xticks( np.arange( 0, len(df.columns), len(df.columns)/50 ), minor=True )
+fmin = 0.0
+fmax = 0.5*sampling_frequency
+xaxis_major_ticks = np.arange( fmin, len(df.columns), len(df.columns)/10 )
+xaxis_minor_ticks = np.arange( fmin, len(df.columns), len(df.columns)/50 )
+xaxis_major_ticks_norm = np.around( fmax * ( xaxis_major_ticks / len(df.columns) ), decimals=1 )
 
-# ax.set_xticks( np.arange( 0, 129, 12.9 ) )
+# print( xaxis_major_ticks )
+# print( xaxis_minor_ticks )
+
+ax.set_xticks( xaxis_major_ticks, minor=False )
+ax.set_xticks( xaxis_minor_ticks, minor=True )
+ax.set_xticklabels( xaxis_major_ticks_norm.astype(str) )
+
+# ax.set_xticks( np.arange( 0, len(df.columns), len(df.columns)/10 ), minor=False )
+# ax.set_xticks( np.arange( 0, len(df.columns), len(df.columns)/50 ), minor=True )
+# # ax.set_xticks( np.arange( 0, 129, 12.9 ) )
+# ax.set_xticklabels( ["0", "5", "10", "15", "20", "25", "30", "35", "40", "45" ] )
+
 # new_ticks = ax.get_xticks()
 # print(new_ticks)
-
-ax.set_xticklabels( ["0", "5", "10", "15", "20", "25", "30", "35", "40", "45" ] )
 
 ax.grid( axis='both', which="both", color='gray', linestyle='dashed', linewidth=0.5 )
 
